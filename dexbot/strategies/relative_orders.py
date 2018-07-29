@@ -25,7 +25,9 @@ class Strategy(BaseStrategy):
                           'The percentage difference between buy and sell', (0, 100, 2, '%')),
             ConfigElement('manual_offset', 'float', 0, 'Manual center price offset',
                           "Manually adjust orders up or down. "
-                          "Works independently of other offsets and doesn't override them", (-50, 100, 2, '%'))
+                          "Works independently of other offsets and doesn't override them", (-50, 100, 2, '%')),
+            ConfigElement('detect_partial_fill', 'bool', False, 'Reset orders on partial fill',
+                          'Whether order is filled partially, reset old orders and put a new ones', None)
         ]
 
     def __init__(self, *args, **kwargs):
@@ -51,6 +53,7 @@ class Strategy(BaseStrategy):
         self.manual_offset = self.worker.get('manual_offset', 0) / 100
         self.order_size = float(self.worker.get('amount', 1))
         self.spread = self.worker.get('spread') / 100
+        self.is_detect_partial_fill = self.worker.get('detect_partial_fill', False)
 
         self.buy_price = None
         self.sell_price = None
@@ -158,6 +161,15 @@ class Strategy(BaseStrategy):
                 if not current_order:
                     orders_changed = True
                     self.write_order_log(self.worker_name, order)
+                elif self.is_detect_partial_fill:
+                        # detect partially filled orders;
+                        # on fresh order 'for_sale' is always equal to ['base']['amount']
+                        if current_order['for_sale'].amount != current_order['base']['amount']:
+                            orders_changed = True
+                            self.log.info('Partially filled order detected')
+                            # FIXME: need to write TRADE operation; possible race condition may occur: while
+                            #        we're updating order it may be filled futher so trade log entry will not
+                            #        be correct
 
             if orders_changed:
                 self.update_orders()
