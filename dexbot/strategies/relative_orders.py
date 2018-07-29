@@ -27,7 +27,9 @@ class Strategy(BaseStrategy):
                           "Manually adjust orders up or down. "
                           "Works independently of other offsets and doesn't override them", (-50, 100, 2, '%')),
             ConfigElement('detect_partial_fill', 'bool', False, 'Reset orders on partial fill',
-                          'Whether order is filled partially, reset old orders and put a new ones', None)
+                          'Whether order is filled partially, reset old orders and put a new ones', None),
+            ConfigElement('expiration_time', 'int', 604800, 'Custom expiration',
+                          'Define custom order expiration time, seconds', (30, 157680000, ''))
         ]
 
     def __init__(self, *args, **kwargs):
@@ -54,6 +56,7 @@ class Strategy(BaseStrategy):
         self.order_size = float(self.worker.get('amount', 1))
         self.spread = self.worker.get('spread') / 100
         self.is_detect_partial_fill = self.worker.get('detect_partial_fill', False)
+        self.expiration = self.worker.get('expiration_time', 604800)
 
         self.buy_price = None
         self.sell_price = None
@@ -125,13 +128,13 @@ class Strategy(BaseStrategy):
         amount_quote = self.amount_quote
 
         # Buy Side
-        buy_order = self.market_buy(amount_base, self.buy_price, True)
+        buy_order = self.market_buy(amount_base, self.buy_price, True, expiration=self.expiration)
         if buy_order:
             self.save_order(buy_order)
             order_ids.append(buy_order['id'])
 
         # Sell Side
-        sell_order = self.market_sell(amount_quote, self.sell_price, True)
+        sell_order = self.market_sell(amount_quote, self.sell_price, True, expiration=self.expiration)
         if sell_order:
             self.save_order(sell_order)
             order_ids.append(sell_order['id'])
