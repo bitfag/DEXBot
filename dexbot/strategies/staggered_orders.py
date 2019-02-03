@@ -1160,10 +1160,20 @@ class Strategy(StrategyBase):
                         need_increase = False
 
                 elif (order_amount_normalized < closer_order_bound and
+                        order_amount_normalized < closest_order_bound and
                         closer_order_bound - order_amount >= order_amount * self.increment / 2):
                     """ Check whether order amount is less than closer or order and the diff is more than 50% of one
                         increment. Note: we can use only 50% or less diffs. Bigger will not work. For example, with 
                         diff 80% an order may have an actual difference like 30% from closer and 70% from further.
+
+                        Also prevent moving liqudity away from closer-to-center orders. Instead of increasing "80"
+                        orders, increase closer-to-center orders first:
+
+                        [80 80 80 100 100 100 60 50 40 40]
+                        [80 80 80 100 100 100 60 50 50 40]
+                        [80 80 80 100 100 100 60 50 50 50]
+                        ...
+                        [80 80 80 100 100 100 60 60 60 60]
                     """
                     new_order_amount = closer_order_bound
                     need_increase = True
@@ -1187,11 +1197,14 @@ class Strategy(StrategyBase):
             orders_count = len(orders)
             orders = list(reversed(orders))
             closest_order = orders[-1]
-            previous_amount = 0
+            increase_factor = max(1 + self.increment, self.min_increase_factor)
+            initial_closest_order_bound = closest_order['base']['amount'] * (1 + self.increment)
 
             for order in orders:
                 order_index = orders.index(order)
+                reverse_index = orders_count - order_index
                 order_amount = order['base']['amount']
+                closest_order_bound = initial_closest_order_bound
 
                 if order_index == 0:
                     # This is a furthest order
@@ -1207,9 +1220,12 @@ class Strategy(StrategyBase):
                     closer_order = orders[order_index + 1]
                     closer_order_bound = closer_order['base']['amount'] / math.sqrt(1 + self.increment)
                     is_closest_order = False
+                    # What size current order may be based on initial closest order bound
+                    closest_order_bound = initial_closest_order_bound / (math.sqrt(1 + self.increment) ** \
+                                          reverse_index)
                 else:
                     is_closest_order = True
-                    closer_order_bound = order['base']['amount'] * (1 + self.increment)
+                    closer_order_bound = order['base']['amount'] * increase_factor
 
                     new_orders_sum = 0
                     amount = order_amount
@@ -1221,36 +1237,34 @@ class Strategy(StrategyBase):
 
                     if new_amount > closer_order_bound and virtual_furthest_order_bound > furthest_order_bound:
                         # Maximize order up to max possible amount if we can
+                        # New order may be feeling bigger than expected after mountain -> neutral transition, it's ok
                         closer_order_bound = new_amount
 
                 need_increase = False
                 order_amount_normalized = order_amount * (1 + self.increment / 10)
 
                 if (order_amount_normalized < further_order_bound and
+                        order_amount_normalized < closest_order_bound and
                         further_order_bound - order_amount >= order_amount * (math.sqrt(1 + self.increment) - 1) / 2):
                     # Order is less than further order and diff is more than `increment / 2`
-
+                    # Order is also less than previously calculated closest_order_bound
                     if is_closest_order:
-                        new_order_amount = closer_order_bound
-                        need_increase = True
+                        # At first, maximize order as we can
+                        new_order_amount = max(closer_order_bound, further_order_bound)
+                        # Then apply balance limit
+                        new_order_amount = min(new_order_amount, asset_balance['amount'] + order['for_sale']['amount'])
                     else:
-                        price = closest_order['price']
-                        amount = closest_order['base']['amount']
-                        while price > order['price'] * (1 + self.increment / 10):
-                            # Calculate closer order amount based on current closest order
-                            previous_amount = amount
-                            price = price / (1 + self.increment)
-                            amount = amount / math.sqrt(1 + self.increment)
-                        if order_amount_normalized < previous_amount:
-                            # Current order is less than virtually calculated next order
-                            # Do not allow to increase more than further order amount
-                            new_order_amount = min(order['base']['amount'] * (1 + self.increment), further_order_bound)
-                            need_increase = True
+                        # Current order is less than virtually calculated next order (closest_order_bound)
+                        # Do not allow to increase more than further order amount
+                        new_order_amount = min(order['base']['amount'] * increase_factor, further_order_bound)
+                    need_increase = True
 
                 elif (order_amount_normalized < closer_order_bound and
+                        order_amount_normalized < closest_order_bound and
                         closer_order_bound - order_amount >= order_amount * (math.sqrt(1 + self.increment) - 1) / 2):
                     # Order is less than closer order and diff is more than `increment / 2`
-
+                    # Order is also less than virtually calculated closest_order_bound, this prevents moving liquidity
+                    # away from center, see similar code in Valley mode for description
                     new_order_amount = closer_order_bound
                     need_increase = True
 
