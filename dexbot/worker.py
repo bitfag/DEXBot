@@ -6,6 +6,7 @@ import threading
 import copy
 
 import dexbot.errors as errors
+from dexbot.plugin import PluginInfrastructure
 from dexbot.strategies.base import StrategyBase
 
 from bitshares import BitShares
@@ -173,6 +174,8 @@ class WorkerInfrastructure(threading.Thread):
         self.update_notify()
 
     def run(self):
+        self.plugins_thread = PluginInfrastructure(self.config)
+        self.plugins_thread.start()
         self.init_workers(self.config)
         self.update_notify()
         self.notify.listen()
@@ -205,6 +208,9 @@ class WorkerInfrastructure(threading.Thread):
                 for worker in self.workers:
                     self.workers[worker].pause()
                 self.workers = []
+
+            # Notify plugins to stop
+            self.plugins_thread.need_stop = True
 
         # Update other workers
         if len(self.workers) > 0:
