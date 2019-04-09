@@ -17,3 +17,4 @@ websocket-client==0.54.0
 sdnotify==0.3.2
 sqlalchemy==1.2.11
 click==7.0
+pycoingecko==0.1.6

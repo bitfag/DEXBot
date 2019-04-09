@@ -1,7 +1,8 @@
 from .ccxt_engine import CcxtEngine
+from .gecko_engine import GeckoEngine
 
 
-class PriceQueryEngine(CcxtEngine):
+class PriceQueryEngine(CcxtEngine, GeckoEngine):
     """ Interface to do read-only queries of external APIs
 
         :param str exchange: exchange name, bittrex / binance /etc
@@ -12,7 +13,7 @@ class PriceQueryEngine(CcxtEngine):
     def __init__(self, exchange, market, *args, **kwargs):
 
         if exchange == 'gecko':
-            pass
+            GeckoEngine.__init__(self, market, *args, **kwargs)
         elif exchange == 'waves':
             pass
         else:
