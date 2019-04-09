@@ -306,6 +306,8 @@ class ExternalEngineBase:
             :param float target_amount: measure orderbook for this amount
             :param list orders: bids or asks orders
             :param bool base: (optional) True = measure BASE amount, False = QUOTE
+            :return: sum amount of BASE and QUOTE
+            :rtype: tuple
         """
         sum_quote = 0
         sum_base = 0
