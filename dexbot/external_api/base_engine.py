@@ -51,7 +51,7 @@ class ExternalEngineBase:
 
             :param float quote_amount: amount of QUOTE asset to use in depth measurement
             :param float base_amount: amount of BASE asset to use in depth measurement
-            :param bool suppress_errors: (optional) if error will occure, emit an error message and return None
+            :param bool suppress_errors: (optional) False = if error will occur, emit an error message and return None
             :param str market: (optional) override market
             :param str intermediate_asset: (optional) specify intermediate asset to use for price conversion, usually
                 BTC or USD
@@ -95,7 +95,7 @@ class ExternalEngineBase:
 
             :param float quote_amount: amount of QUOTE asset to use in depth measurement
             :param float base_amount: amount of BASE asset to use in depth measurement
-            :param bool suppress_errors: (optional) if error will occure, emit an error message and return None
+            :param bool suppress_errors: (optional) False = if error will occur, emit an error message and return None
             :param str market: (optional) override market
             :return: Market center price as float, or None on error
             :rtype: float
