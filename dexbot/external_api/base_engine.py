@@ -64,7 +64,7 @@ class ExternalEngineBase:
         intermediate_asset = intermediate_asset.upper()
 
         # Return direct center price if intermediate asset is BASE or QUOTE
-        if self.quote_currency == intermediate_asset or self.quote_currency == intermediate_asset:
+        if self.quote_currency == intermediate_asset or self.base_currency == intermediate_asset:
             return self.get_market_center_price(
                 base_amount=base_amount, quote_amount=quote_amount, suppress_errors=suppress_errors
             )
