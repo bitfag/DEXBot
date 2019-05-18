@@ -3,7 +3,7 @@ import pytest
 from dexbot.external_api.price_engine import PriceQueryEngine
 
 
-@pytest.fixture(scope='module', params=[('bittrex', 'BTC/USD')])
+@pytest.fixture(scope='module', params=[('bittrex', 'BTC/USD'), ('binance', 'USD/BTC')])
 def price_engine(request):
     engine = PriceQueryEngine(request.param[0], request.param[1])
     return engine
