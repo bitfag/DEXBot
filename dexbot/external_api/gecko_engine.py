@@ -117,3 +117,39 @@ class GeckoEngine(ExternalEngineBase):
                 return 1 / price
 
         return price
+
+    def get_derived_center_price(
+        self, suppress_errors=False, market=None, intermediate_asset='BTC', **kwargs
+    ):
+        """ Returns the center price of indirect market by calculating the price by using intermediate asset, e.g.
+            LTC/BTS price is obtained from LTC/BTC and BTS/BTC markets.
+
+            :param bool suppress_errors: (optional) False = if error will occur, emit an error message and return None
+            :param str,dict market: (optional): market to get price for, can be a 'QUOTE/BASE' string or dict of
+                internal format
+            :param str intermediate_asset: (optional) specify intermediate asset to use for price conversion, usually
+                BTC or USD
+            :return: Market center price as float
+            :rtype: float
+        """
+        original_market = market
+
+        if not market:
+            # Market was not passed
+            market = self.market
+        elif isinstance(market, str):
+            # Market passed as 'QUOTE/BASE', get internal format
+            market = self._convert_market(market)
+
+        # Return direct center price if direct market exists
+        if market:
+            return self.get_market_center_price(market=market)
+
+        intermediate_asset = intermediate_asset.upper()
+        price = 0.0
+
+
+    # Comments:
+    # Market is mandatory when instantiating a class
+    # External methods doesn't have a market
+    # Internal methods do have market
