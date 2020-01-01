@@ -68,7 +68,6 @@ class Strategy(RelativeStrategy):
 
         self.buy_orders_percentages = self.validate_orders(self.buy_orders)
         self.sell_orders_percentages = self.validate_orders(self.sell_orders)
-        self.num_orders_expected = len(self.buy_orders_percentages) + len(self.sell_orders_percentages)
 
         # Set last check in the past to get immediate check at startup
         self.last_check = datetime(2000, 1, 1)
@@ -110,11 +109,7 @@ class Strategy(RelativeStrategy):
             orders = [order for id_, order in orders.items()]
         except AttributeError:
             # orders is None
-            self.place_orders()
-            return
-
-        # Is number of stored orders correct?
-        if len(orders) < self.num_orders_expected:
+            self.log.debug('No orders in the db, placing orders')
             self.place_orders()
             return
 

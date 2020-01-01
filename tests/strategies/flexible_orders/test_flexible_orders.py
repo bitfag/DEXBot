@@ -168,11 +168,12 @@ def test_place_orders(strategy_worker, monkeypatch, bitshares):
             return Amount(100, asset, bitshares_instance=bitshares)
 
     worker = strategy_worker
+    num_orders_expected = len(worker.buy_orders_percentages) + len(worker.sell_orders_percentages)
 
     # Good cp
     monkeypatch.setattr(worker, 'get_market_center_price', mocked_cp)
     worker.place_orders()
-    assert len(worker.own_orders) == worker.num_orders_expected
+    assert len(worker.own_orders) == num_orders_expected
 
     # Bad cp
     monkeypatch.setattr(worker, 'get_market_center_price', mocked_cp_bad)
@@ -211,15 +212,17 @@ def test_maintain_strategy(strategy_worker, other_worker, other_orders):
     worker = strategy_worker
     worker2 = other_worker
 
+    num_orders_expected = len(worker.buy_orders_percentages) + len(worker.sell_orders_percentages)
+
     # Fresh run no orders
     worker.maintain_strategy()
-    assert len(worker.own_orders) == worker.num_orders_expected
+    assert len(worker.own_orders) == num_orders_expected
 
     # Simulate order filled
     order = worker.get_own_buy_orders()[0]
     worker.cancel_orders(order)
     worker.maintain_strategy()
-    assert len(worker.own_orders) == worker.num_orders_expected
+    assert len(worker.own_orders) == num_orders_expected
 
     # Order partially filled
     order = worker.get_own_buy_orders()[0]
@@ -247,10 +250,15 @@ def test_maintain_strategy(strategy_worker, other_worker, other_orders):
 
 def test_maintain_strategy_transition_from_staggered_orders(strategy_worker, other_worker, other_orders, monkeypatch):
     def mocked_orders():
-        return {'fdfgf-hghgsfdf-hghg': 'doesnt_matter'}
+        return {'fdfgf-hghgsfdf-hghg': {'id': 'fdfgf-hghgsfdf-hghg'}}
+
+    def mocked_filter(*args):
+        return args[0]
 
     worker = strategy_worker
+    num_orders_expected = len(worker.buy_orders_percentages) + len(worker.sell_orders_percentages)
 
     monkeypatch.setattr(worker, 'fetch_orders', mocked_orders)
+    monkeypatch.setattr(worker, 'filter_closest_orders', mocked_filter)
     worker.maintain_strategy()
-    assert len(worker.own_orders) == worker.num_orders_expected
+    assert len(worker.own_orders) == num_orders_expected
