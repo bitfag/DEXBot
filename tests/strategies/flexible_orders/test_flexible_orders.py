@@ -150,13 +150,13 @@ def test_place_orders(strategy_worker, monkeypatch, bitshares):
         if asset == worker.market['base']:
             return Amount(0, asset, bitshares_instance=bitshares)
         else:
-            return Amount(1000, asset, bitshares_instance=bitshares)
+            return Amount(100, asset, bitshares_instance=bitshares)
 
     def zero_balance_quote(asset):
         if asset == worker.market['quote']:
             return Amount(0, asset, bitshares_instance=bitshares)
         else:
-            return Amount(1000, asset, bitshares_instance=bitshares)
+            return Amount(100, asset, bitshares_instance=bitshares)
 
     worker = strategy_worker
 
