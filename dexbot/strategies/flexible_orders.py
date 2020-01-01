@@ -123,7 +123,8 @@ class Strategy(RelativeStrategy):
             orders_to_check = self.filter_closest_orders(orders)
             refreshed_orders = [self.get_order(order['id']) for order in orders_to_check]
             for order in refreshed_orders:
-                if self.is_partially_filled(order, threshold=self.partial_fill_threshold):
+                if not order or self.is_partially_filled(order, threshold=self.partial_fill_threshold):
+                    # Order is None or partially filled
                     self['bootstrapped'] = True
                     self.place_orders()
                     return
