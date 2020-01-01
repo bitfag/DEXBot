@@ -60,7 +60,7 @@ class Strategy(RelativeStrategy):
         self.is_reset_on_partial_fill = self.worker.get('reset_on_partial_fill', True)
         self.partial_fill_threshold = self.worker.get('partial_fill_threshold', 90) / 100
         self.is_reset_on_price_change = self.worker.get('reset_on_price_change', False)
-        self.price_change_threshold = self.worker.get('price_change_threshold', 2) / 100
+        self.price_change_threshold = self.worker.get('price_change_threshold', 0.5) / 100
         # Our center price is always dynamic
         self.is_center_price_dynamic = True
 
