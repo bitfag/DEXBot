@@ -234,3 +234,14 @@ def test_maintain_strategy(strategy_worker, other_worker, other_orders):
     worker.maintain_strategy()
     orders_after = worker.own_orders
     assert orders_before != orders_after
+
+
+def test_maintain_strategy_transition_from_staggered_orders(strategy_worker, other_worker, other_orders, monkeypatch):
+    def mocked_orders():
+        return {'fdfgf-hghgsfdf-hghg': 'doesnt_matter'}
+
+    worker = strategy_worker
+
+    monkeypatch.setattr(worker, 'fetch_orders', mocked_orders)
+    worker.maintain_strategy()
+    assert len(worker.own_orders) == worker.num_orders_expected

@@ -2,6 +2,8 @@
 from datetime import datetime, timedelta
 from functools import reduce
 
+from bitsharesapi.exceptions import UnhandledRPCError
+
 # Project imports
 from dexbot.strategies.base import StrategyBase
 from dexbot.strategies.relative_orders import Strategy as RelativeStrategy
@@ -102,8 +104,9 @@ class Strategy(RelativeStrategy):
             return
 
         orders = self.fetch_orders()
-        # dict -> list
+        # If no orders stored, place orders
         try:
+            # dict -> list
             orders = [order for id_, order in orders.items()]
         except AttributeError:
             # orders is None
@@ -111,20 +114,29 @@ class Strategy(RelativeStrategy):
             self['bootstrapped'] = True
             return
 
-        # Is orders number correct?
+        # Is number of stored orders correct?
         if len(orders) < self.num_orders_expected:
             self.place_orders()
             self['bootstrapped'] = True
             return
 
-        # Orders were touched/filled? Replace orders
-        if self.is_reset_on_partial_fill:
-            # Check only closest orders (optimization)
-            orders_to_check = self.filter_closest_orders(orders)
+        # Orders were filled? Replace orders
+        # Check only closest orders (optimization)
+        orders_to_check = self.filter_closest_orders(orders)
+        try:
             refreshed_orders = [self.get_order(order['id']) for order in orders_to_check]
+        except UnhandledRPCError as e:
+            if str(e).startswith('Assert Exception: first_dot != second_dot'):
+                # Wrong order id
+                self.place_orders()
+                self['bootstrapped'] = True
+            else:
+                raise
+
+        # Orders were partially filled?
+        if self.is_reset_on_partial_fill:
             for order in refreshed_orders:
-                if not order or self.is_partially_filled(order, threshold=self.partial_fill_threshold):
-                    # Order is None or partially filled
+                if self.is_partially_filled(order, threshold=self.partial_fill_threshold):
                     self['bootstrapped'] = True
                     self.place_orders()
                     return
