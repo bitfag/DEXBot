@@ -111,13 +111,11 @@ class Strategy(RelativeStrategy):
         except AttributeError:
             # orders is None
             self.place_orders()
-            self['bootstrapped'] = True
             return
 
         # Is number of stored orders correct?
         if len(orders) < self.num_orders_expected:
             self.place_orders()
-            self['bootstrapped'] = True
             return
 
         # Orders were filled? Replace orders
@@ -127,19 +125,20 @@ class Strategy(RelativeStrategy):
             refreshed_orders = [self.get_order(order['id']) for order in orders_to_check]
         except UnhandledRPCError as e:
             if str(e).startswith('Assert Exception: first_dot != second_dot'):
-                # Wrong order id
+                # Wrong order id, probably a transition from SO
                 self.place_orders()
-                self['bootstrapped'] = True
             else:
                 raise
 
-        # Orders were partially filled?
-        if self.is_reset_on_partial_fill:
-            for order in refreshed_orders:
-                if self.is_partially_filled(order, threshold=self.partial_fill_threshold):
-                    self['bootstrapped'] = True
-                    self.place_orders()
-                    return
+        # Order was fully or partially filled
+        for order in refreshed_orders:
+            if not order or (
+                self.is_reset_on_partial_fill and self.is_partially_filled(order, threshold=self.partial_fill_threshold)
+            ):
+                # Set bootstrap flag to indicate we can safely use center_price_from_last_trade
+                self['bootstrapped'] = True
+                self.place_orders()
+                return
 
         # Center price changed too much? Replace orders
         if self.is_reset_on_price_change:
