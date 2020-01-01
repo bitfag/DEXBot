@@ -124,9 +124,10 @@ class Strategy(RelativeStrategy):
         try:
             refreshed_orders = [self.get_order(order['id']) for order in orders_to_check]
         except UnhandledRPCError as e:
-            if str(e).startswith('Assert Exception: first_dot != second_dot'):
+            if str(e).startswith('first_dot != second_dot'):
                 # Wrong order id, probably a transition from SO
                 self.place_orders()
+                return
             else:
                 raise
 
