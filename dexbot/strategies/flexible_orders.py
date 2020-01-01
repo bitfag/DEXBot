@@ -285,7 +285,13 @@ class Strategy(RelativeStrategy):
         """
         buy_orders = self.filter_buy_orders(orders, sort='DESC')
         sell_orders = self.filter_sell_orders(orders, sort='DESC', invert=False)
-        result = [buy_orders[0], sell_orders[0]]
+        result = []
+        for orders in buy_orders, sell_orders:
+            try:
+                result.append(orders[0])
+            except IndexError:
+                pass
+
         return result
 
     def check_cp_shift_is_too_big(self, old_center_price, current_center_price):

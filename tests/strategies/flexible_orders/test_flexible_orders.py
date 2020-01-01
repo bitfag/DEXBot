@@ -133,6 +133,15 @@ def test_filter_closest_orders(strategy_worker):
     assert closest[1]['id'] == closest_sell['id']
 
 
+def test_filter_closest_orders_missing(strategy_worker):
+    worker = strategy_worker
+    worker.place_market_buy_order(1, 0.9)
+    closesest_buy = worker.place_market_buy_order(1, 0.95)
+
+    closest = worker.filter_closest_orders(worker.own_orders)
+    assert closest[0]['id'] == closesest_buy['id']
+
+
 def test_place_orders(strategy_worker, monkeypatch, bitshares):
     def mocked_cp(*args, **kwargs):
         return 1
