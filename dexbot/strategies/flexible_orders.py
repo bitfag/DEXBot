@@ -142,6 +142,7 @@ class Strategy(RelativeStrategy):
             current_center_price = self.calc_center_price()
             need_update = self.check_cp_shift_is_too_big(old_center_price, current_center_price)
             if need_update:
+                self.log.info('Center price drifted more than threshold, replacing orders')
                 self.place_orders()
                 return
 
@@ -153,7 +154,7 @@ class Strategy(RelativeStrategy):
         if self.external_feed:
             try:
                 center_price = self.get_external_market_center_price(self.external_price_source)
-                self.log.info('Using center price from external source: {:.8f}'.format(center_price))
+                self.log.debug('Using center price from external source: {:.8f}'.format(center_price))
             except TypeError:
                 self.log.warning('Failed to obtain center price from external source')
                 raise
@@ -172,7 +173,7 @@ class Strategy(RelativeStrategy):
                     raise
         else:
             center_price = self.get_market_center_price(quote_amount=self.center_price_depth)
-            self.log.info('Using market center price: {:.8f}'.format(center_price))
+            self.log.debug('Using market center price: {:.8f}'.format(center_price))
 
         return center_price
 
@@ -196,6 +197,7 @@ class Strategy(RelativeStrategy):
         """
         try:
             center_price = self.calc_center_price()
+            self.log.info('Using center price {:.8f}'.format(center_price))
         except TypeError:
             self.log.error('Failed to obtain center price')
             self.cancel_all_orders()
