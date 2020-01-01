@@ -137,7 +137,7 @@ class Strategy(RelativeStrategy):
                 return
 
         # Center price changed too much? Replace orders
-        if self.is_reset_on_price_change:
+        if self.is_reset_on_price_change and not self.cp_from_last_trade:
             old_center_price = self['center_price']
             current_center_price = self.calc_center_price()
             need_update = self.check_cp_shift_is_too_big(old_center_price, current_center_price)
