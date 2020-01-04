@@ -8,7 +8,7 @@ ARG USER=dexbot
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 ENV HOME_PATH /home/$USER
-ENV SRC_PATH $HOME_PATH/source
+ENV SRC_PATH $HOME_PATH/dexbot
 ENV PATH $HOME_PATH/.local/bin:$PATH
 ENV LOCAL_DATA $HOME_PATH/.local/share
 ENV CONFIG_DATA $HOME_PATH/.config
@@ -22,7 +22,7 @@ RUN set -xe ;\
     rm -rf /var/lib/apt/lists/*
 
 RUN set -xe ;\
-    # Create user and change workdir
+    # Create user
     groupadd -r $USER ;\
     useradd -m -g $USER $USER ;\
     # Configure permissions (directories must be created with proper owner before VOLUME directive)
@@ -34,19 +34,13 @@ USER $USER
 
 WORKDIR $SRC_PATH
 
-# Install dependencies in separate stage to speed up further builds
-COPY requirements.txt $SRC_PATH/
-RUN python3 -m pip install --user -r requirements.txt
+RUN python3 -m pip install pipenv
 
 # Copy project files
 COPY dexbot $SRC_PATH/dexbot/
-COPY *.py *.cfg Makefile README.md $SRC_PATH/
+COPY *.py *.cfg Makefile README.md Pipfile Pipfile.lock $SRC_PATH/
 
 # Build the project
-RUN set -xe ;\
-    python3 setup.py build ;\
-    python3 setup.py install --user
-
-WORKDIR $HOME_PATH
+RUN pipenv install --deploy
 
 VOLUME ["$LOCAL_DATA", "$CONFIG_DATA"]
