@@ -1,0 +1,33 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+pre-commit = "*"
+docker = "*"
+sphinxcontrib-apidoc = "*"
+
+[packages]
+pyqt5 = "*"
+pyqt-distutils = "*"
+pyinstaller = "*"
+click-datetime = "*"
+aiohttp = "*"
+requests = "*"
+yarl = "*"
+ccxt = "*"
+pywaves = "*"
+graphenelib = "*"
+bitshares = "*"
+uptick = "*"
+ruamel-yaml = "*"
+appdirs = "*"
+sdnotify = "*"
+sqlalchemy = "*"
+click = "*"
+alembic = "*"
+
+[requires]
+python_version = "3.6"
