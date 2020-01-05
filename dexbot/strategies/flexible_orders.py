@@ -1,14 +1,10 @@
-# Python imports
 from datetime import datetime, timedelta
 from functools import reduce
 
 from bitsharesapi.exceptions import UnhandledRPCError
-
-# Project imports
 from dexbot.strategies.base import StrategyBase
-from dexbot.strategies.relative_orders import Strategy as RelativeStrategy
 from dexbot.strategies.config_parts.flexible_config import FlexibleConfig
-
+from dexbot.strategies.relative_orders import Strategy as RelativeStrategy
 
 STRATEGY_NAME = 'Flexible Orders'
 
