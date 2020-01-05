@@ -57,6 +57,7 @@ class Strategy(RelativeStrategy):
         self.sell_stop_ratio = self.worker.get('sell_stop_ratio', 50) / 100
         self.external_feed = self.worker.get('external_feed', False)
         self.external_price_source = self.worker.get('external_price_source', 'gecko')
+        self.external_market = self.worker.get('external_market', self.market.get_string('/'))
         self.center_price_depth = self.worker.get('center_price_depth', 0)
         self.cp_from_last_trade = self.worker.get('center_price_from_last_trade', False)
         self.is_reset_on_partial_fill = self.worker.get('reset_on_partial_fill', True)
