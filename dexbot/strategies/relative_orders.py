@@ -43,6 +43,7 @@ class Strategy(StrategyBase):
         # Set external price source, defaults to False if not found
         self.external_feed = self.worker.get('external_feed', False)
         self.external_price_source = self.worker.get('external_price_source', 'gecko')
+        self.external_market = self.worker.get('external_market', self.market.get_string('/'))
 
         if self.external_feed:
             # Get external center price from given source
@@ -174,9 +175,8 @@ class Strategy(StrategyBase):
             :return: Center price as float
         """
         self.log.debug('inside get_external_mcp, exchange: {} '.format(external_price_source))
-        market = self.market.get_string('/')
-        self.log.debug('market: {}  '.format(market))
-        price_feed = PriceFeed(external_price_source, market)
+        self.log.debug('market: {}  '.format(self.external_market))
+        price_feed = PriceFeed(external_price_source, self.external_market)
         price_feed.filter_symbols()
         center_price = price_feed.get_center_price(None)
         self.log.debug('PriceFeed: {}'.format(center_price))

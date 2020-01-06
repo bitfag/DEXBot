@@ -32,6 +32,7 @@ STRATEGIES = [
     {'tag': 'relative', 'class': 'dexbot.strategies.relative_orders', 'name': 'Relative Orders'},
     {'tag': 'stagger', 'class': 'dexbot.strategies.staggered_orders', 'name': 'Staggered Orders'},
     {'tag': 'koth', 'class': 'dexbot.strategies.king_of_the_hill', 'name': 'King of the Hill'},
+    {'tag': 'flex', 'class': 'dexbot.strategies.flexible_orders', 'name': 'Flexible Orders'},
 ]
 
 # Todo: tags must be unique. Are they really a tags?
