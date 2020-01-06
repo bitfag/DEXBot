@@ -22,7 +22,7 @@ Configuration parameters
   an ability to set orders asymmetrically
 * `buy_orders`: define buy orders number and amounts in following form: `30-20-10`. This notation means 3 orders will be
   placed, using 30%, 20%, and 10% of the BASE asset amount. Orders direction is from far end towards center.
-* `sell_orders`: sell orders amounts similarly to `buy_orders`, exept orders direction is from center to far end! This
+* `sell_orders`: sell orders amounts similarly to `buy_orders`, except orders direction is from center to far end! This
   makes sense if you'll look at orders like this: `30-20-10 <center> 2-3-4`.
 * `buy_increment_step`, `sell_increment_step`: increment % between orders. That is, you can set different increment for
   buy and sell orders
@@ -65,8 +65,8 @@ Trading Bitcoin and waiting for "to the moon"
 ---------------------------------------------
 
 Say, your expectation is BTC going moon. So your goal is to keep most of your BTC, doing partial sells on highs and
-re-bying on price drops. So, you're set high sell stop ratio and low buy stop ratio. Order sizes are also set
-accordingly: sell small amounts and try to re-buy more agressively.
+re-buying on price drops. So, you're set high sell stop ratio and low buy stop ratio. Order sizes are also set
+accordingly: sell small amounts and try to re-buy more aggressively.
 
 .. code-block:: yaml
 
