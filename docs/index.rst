@@ -17,6 +17,11 @@ Strategies
 .. toctree::
    :maxdepth: 1
 
+   staggeredorders
+   relativeorders
+   flexibleorders
+   koth
+
 Developing own Strategies
 -------------------------
 
