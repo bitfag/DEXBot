@@ -1,6 +1,7 @@
-Differences from [DEXBot](https://github.com/Codaone/DEXBot)
+Meaningful differences from original [DEXBot](https://github.com/Codaone/DEXBot)
 
-* xxx
+* Recommended installation way via `pipenv`
+* Flexible Orders strategy
 
 
 Installation using pipenv
@@ -37,6 +38,8 @@ See <https://github.com/Codaone/DEXBot/wiki>
 
 Running in docker
 -----------------
+
+**Note: docker images are not available yet**
 
 By default, local data is stored inside docker volumes. To avoid loosing configs and data, it's advised to mount custom
 directories inside the container as shown below.
