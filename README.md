@@ -1,4 +1,5 @@
 Meaningful differences from original [DEXBot](https://github.com/Codaone/DEXBot)
+--------------------------------------------------------------------------------
 
 * Recommended installation way via `pipenv`
 * Flexible Orders strategy
@@ -34,33 +35,33 @@ pipenv shell
 Documentation
 -------------
 
-See <https://github.com/Codaone/DEXBot/wiki>
+Currently you can read original DEXBot wiki here <https://github.com/Codaone/DEXBot/wiki>
+And original DEXBot project documentation here <https://dexbot.readthedocs.io/en/latest/>
 
 Running in docker
 -----------------
 
-**Note: docker images are not available yet**
 
 By default, local data is stored inside docker volumes. To avoid loosing configs and data, it's advised to mount custom
 directories inside the container as shown below.
 
 ```
 mkdir dexbot-data dexbot-config
-docker run -it --rm -v `pwd`/dexbot-data:/home/dexbot/.local/share dexbot/dexbot:latest uptick addkey
-docker run -it --rm -v `pwd`/dexbot-config:/home/dexbot/.config/dexbot -v `pwd`/dexbot-data:/home/dexbot/.local/share dexbot/dexbot:latest ./cli.py configure
+docker run -it --rm -v `pwd`/dexbot-data:/home/dexbot/.local/share vvk123/dexbot:latest uptick addkey
+docker run -it --rm -v `pwd`/dexbot-config:/home/dexbot/.config/dexbot -v `pwd`/dexbot-data:/home/dexbot/.local/share vvk123/dexbot:latest ./cli.py configure
 ```
 
 To run in unattended mode you need to provide wallet passphrase:
 
 ```
-docker run -d --name dexbot -e UNLOCK=pass -v `pwd`/dexbot-config:/home/dexbot/.config/dexbot -v `pwd`/dexbot-data:/home/dexbot/.local/share dexbot/dexbot:latest ./cli.py run
+docker run -d --name dexbot -e UNLOCK=pass -v `pwd`/dexbot-config:/home/dexbot/.config/dexbot -v `pwd`/dexbot-data:/home/dexbot/.local/share vvk123/dexbot:latest ./cli.py run
 ```
 
 Assuming you have created a Docker secret named "passphrase" in your swarm, you can also get it from there:
 
 ```
 printf <pass> | docker secret create passphrase -
-docker run -d --name dexbot -e UNLOCK=/run/secrets/passphrase -v `pwd`/dexbot-config:/home/dexbot/.config/dexbot -v `pwd`/dexbot-data:/home/dexbot/.local/share dexbot/dexbot:latest ./cli.py run
+docker run -d --name dexbot -e UNLOCK=/run/secrets/passphrase -v `pwd`/dexbot-config:/home/dexbot/.config/dexbot -v `pwd`/dexbot-data:/home/dexbot/.local/share vvk123/dexbot:latest ./cli.py run
 ```
 
 Getting help
