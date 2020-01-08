@@ -1,17 +1,12 @@
-import pytest
 import logging
 
+import pytest
 from bitshares.amount import Amount
-
 from dexbot.strategies.flexible_orders import Strategy
 
 # Turn on debug for dexbot logger
 log = logging.getLogger("dexbot")
 log.setLevel(logging.DEBUG)
-
-# @pytest.mark.parametrize("test_input,expected", [('10-20-30', [0.1, 0.2, 0.3])])
-# def test_validate_orders(test_input, expected):
-#    assert Strategy.validate_orders(test_input) == expected
 
 
 def test_validate_orders():
