@@ -15,6 +15,11 @@ def test_validate_orders():
     expected = [0.1, 0.2, 0.3]
     assert Strategy.validate_orders(test_input) == expected
 
+    # Integer input
+    test_input = 10
+    expected = [0.1]
+    assert Strategy.validate_orders(test_input) == expected
+
     # Percent > 100
     test_input = '30-50-40'
     with pytest.raises(ValueError):

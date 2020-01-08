@@ -82,7 +82,7 @@ class Strategy(RelativeStrategy):
             :param str orders: orders in format '30-20-10' where each number is a percentage
             :return: list of orders percentages in format [0.30, 0.20, 0.10]
         """
-        orders = orders.split('-')
+        orders = str(orders).split('-')
         orders = [float(o) / 100 for o in orders]
 
         pct_sum = reduce(lambda x, y: x + y, orders)
