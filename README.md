@@ -3,7 +3,8 @@ Meaningful differences from original [DEXBot](https://github.com/Codaone/DEXBot)
 
 * Recommended installation way via `pipenv`
 * Flexible Orders strategy
-
+* Fixes to Staggered Orders strategy
+* Fresh bitshares libraries used (RPC error messages are shown in details)
 
 Installation using pipenv
 -------------------------
