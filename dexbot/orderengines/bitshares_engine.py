@@ -669,13 +669,17 @@ class BitsharesOrderEngine(Storage, Events):
                     else:
                         tries += 1
                         self.log.warning(
-                            'Too much difference between node block time and trx expiration, switching ' 'node'
+                            'Too much difference between node block time and trx expiration, switching node'
                         )
                         self.bitshares.txbuffer.clear()
                         self.bitshares.rpc.next()
                 elif "Assert Exception: delta.amount > 0: Insufficient Balance" in str(exception):
                     self.log.critical('Insufficient balance of fee asset')
                     raise
+                elif "trx.ref_block_prefix == tapos_block_summary.block_id._hash" in str(exception):
+                    self.log.warning('Got tapos_block_summary exception, switching node')
+                    self.bitshares.txbuffer.clear()
+                    self.bitshares.rpc.next()
                 else:
                     raise
 
