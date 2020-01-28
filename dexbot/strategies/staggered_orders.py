@@ -98,7 +98,7 @@ class Strategy(StrategyBase):
         # Order expiration time
         self.expiration = 60 * 60 * 24 * 365 * 5
         self.start = datetime.now()
-        self.last_check = datetime.now()
+        self.last_check = datetime(1970, 1, 1)
 
         # We do not waiting for order ids to be able to bundle operations
         self.returnOrderId = None
