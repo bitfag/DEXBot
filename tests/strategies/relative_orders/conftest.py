@@ -1,10 +1,12 @@
-import pytest
-import time
 import copy
 import logging
 import random
+import time
+
+import pytest
 from dexbot.strategies.base import StrategyBase
 from dexbot.strategies.relative_orders import Strategy
+from tests.utils import empty_ticker_workaround
 
 log = logging.getLogger("dexbot")
 
@@ -128,14 +130,6 @@ def other_worker(ro_worker_name, config_other_account):
     yield worker
     worker.cancel_all_orders()
     time.sleep(1.1)
-
-
-def empty_ticker_workaround(worker):
-    bid = worker.get_highest_market_buy_order()
-    sell_price = bid['price'] / 1.01
-    to_sell = bid['quote']['amount'] / 10
-    log.debug('Executing empty ticker workaround')
-    worker.place_market_sell_order(to_sell, sell_price)
 
 
 @pytest.fixture

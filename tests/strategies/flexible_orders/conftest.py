@@ -1,10 +1,11 @@
-import pytest
-import time
 import copy
 import logging
+import time
 
+import pytest
 from dexbot.strategies.base import StrategyBase
 from dexbot.strategies.flexible_orders import Strategy
+from tests.utils import empty_ticker_workaround
 
 log = logging.getLogger("dexbot")
 
@@ -133,11 +134,3 @@ def other_orders(other_worker):
     if float(worker.market.ticker().get('highestBid')) == 0:
         empty_ticker_workaround(worker)
     return worker
-
-
-def empty_ticker_workaround(worker):
-    bid = worker.get_highest_market_buy_order()
-    sell_price = bid['price'] / 1.01
-    to_sell = bid['quote']['amount'] / 10
-    log.debug('Executing empty ticker workaround')
-    worker.place_market_sell_order(to_sell, sell_price)
