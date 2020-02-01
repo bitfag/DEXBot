@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import reduce
 
 from bitsharesapi.exceptions import UnhandledRPCError
+from dexbot.decorators import check_last_run
 from dexbot.strategies.base import StrategyBase
 from dexbot.strategies.config_parts.flexible_config import FlexibleConfig
 from dexbot.strategies.relative_orders import Strategy as RelativeStrategy
@@ -68,7 +69,7 @@ class Strategy(RelativeStrategy):
 
         # Set last check in the past to get immediate check at startup
         self.last_check = datetime(2000, 1, 1)
-        self.min_check_interval = 5
+        self.min_check_interval = 6
 
         if self.view:
             self.update_gui_slider()
@@ -91,14 +92,10 @@ class Strategy(RelativeStrategy):
 
         return orders
 
+    @check_last_run
     def maintain_strategy(self, *args):
         """ Strategy main logic
         """
-        delta = datetime.now() - self.last_check
-        # Only allow to run when minimal time passed
-        if delta < timedelta(seconds=self.min_check_interval):
-            return
-
         orders = self.fetch_orders()
         # If no orders stored, place orders
         try:
@@ -145,8 +142,6 @@ class Strategy(RelativeStrategy):
                 self.log.info('Center price drifted more than threshold, replacing orders')
                 self.place_orders()
                 return
-
-        self.last_check = datetime.now()
 
     def calc_center_price(self):
         """ Calculate center price using various sources depending on settings
