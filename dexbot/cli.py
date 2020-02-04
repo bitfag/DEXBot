@@ -10,6 +10,7 @@ import click  # noqa: E402
 from dexbot.cli_conf import SYSTEMD_SERVICE_NAME, get_whiptail, setup_systemd
 from dexbot.config import DEFAULT_CONFIG_FILE, Config
 from dexbot.helper import initialize_data_folders, initialize_orders_log
+from dexbot.storage import Storage
 from dexbot.ui import chain, configfile, unlock, verbose
 
 from . import errors, helper
@@ -135,6 +136,15 @@ def configure(ctx):
     if config.get('systemd_status', 'disabled') == 'enabled':
         click.echo("Starting dexbot daemon")
         os.system("systemctl --user start dexbot")
+
+
+@main.command()
+@click.argument('worker_name')
+def drop_state(worker_name):
+    """ Drop state of the worker (sqlite data)
+    """
+    click.echo('Dropping state for {}'.format(worker_name))
+    Storage.clear_worker_data(worker_name)
 
 
 def worker_job(worker, job):
