@@ -301,6 +301,14 @@ class Strategy(RelativeStrategy):
 
         return False
 
+    def pause(self):
+        """ Pause the worker
+        """
+        if not self.cp_from_last_trade:
+            self.cancel_all_orders()
+            # Removes worker's orders from local database
+            self.clear_orders()
+
     def error(self, *args, **kwargs):
         """ Defines what happens when error occurs """
         self.disabled = True
