@@ -29,9 +29,6 @@ RUN set -xe ;\
     mkdir -p $SRC_PATH $LOCAL_DATA $CONFIG_DATA ;\
     chown -R $USER:$USER $HOME_PATH
 
-# Drop priveleges
-USER $USER
-
 WORKDIR $SRC_PATH
 
 RUN python3 -m pip install pipenv
@@ -41,6 +38,9 @@ COPY dexbot $SRC_PATH/dexbot/
 COPY *.py *.cfg Makefile README.md Pipfile Pipfile.lock $SRC_PATH/
 
 # Build the project
-RUN pipenv install --deploy
+RUN pipenv install --deploy --system
+
+# Drop priveleges
+USER $USER
 
 VOLUME ["$LOCAL_DATA", "$CONFIG_DATA"]
