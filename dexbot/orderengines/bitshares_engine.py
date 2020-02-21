@@ -689,9 +689,18 @@ class BitsharesOrderEngine(Storage, Events):
                     self.log.critical('Insufficient balance of fee asset')
                     raise
                 elif "trx.ref_block_prefix == tapos_block_summary.block_id._hash" in str(exception):
-                    self.log.warning('Got tapos_block_summary exception, switching node')
-                    self.bitshares.txbuffer.clear()
-                    self.bitshares.rpc.next()
+                    if tries > MAX_TRIES:
+                        raise
+                    else:
+                        # TODO: move node switch to a function
+                        old = self.bitshares.rpc.url
+                        self.log.warning('Got tapos_block_summary exception, switching node')
+                        self.bitshares.txbuffer.clear()
+                        # TODO: Notify still uses old node, needs to be switched!
+                        self.bitshares.rpc.next()
+                        new = self.bitshares.rpc.url
+                        self.log.info('Old: {}, new: {}'.format(old, new))
+                        tries += 1
                 else:
                     raise
 
