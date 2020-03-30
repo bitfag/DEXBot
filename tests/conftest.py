@@ -212,7 +212,7 @@ def unused_account(bitshares):
 def unused_asset(bitshares):
     def func():
         while True:
-            asset = "".join(random.choice(string.ascii_uppercase) for x in range(7))
+            asset = "".join(random.choice(string.ascii_uppercase) for x in range(7))  # nosec
             try:
                 Asset(asset, bitshares_instance=bitshares)
             except AssetDoesNotExistsException:
