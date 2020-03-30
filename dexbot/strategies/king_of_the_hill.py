@@ -238,7 +238,8 @@ class Strategy(StrategyBase):
         except IndexError:
             self.log.info('Market has empty orderbook')
 
-    def get_cumulative_call_order(self, asset):
+    @staticmethod
+    def get_cumulative_call_order(asset):
         """ Get call orders, compound them and return as it was a single limit order
 
             :param Asset asset: bitshares asset
